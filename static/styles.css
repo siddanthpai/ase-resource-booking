@@ -1,0 +1,24 @@
+table {
+    border-collapse: collapse;
+    width: 80%;
+    margin: auto;
+    background-color: #c8e6c9; /* Light green background for the table */
+}
+
+th, td {
+    border: 1px solid black;
+    padding: 10px;
+    text-align: center;
+}
+
+th {
+    background-color: #2e7d32; /* Dark green header background */
+    color: white;
+}
+
+/* Apply red background to booked cells */
+.booked {
+    background-color: #ef5350; /* Red background for booked cells */
+    color: white;
+}
+
