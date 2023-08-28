@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Slot Booking App</title>
+    <style>
+        table {
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 5px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>ASE Booking App</h1>
+    <form method="POST">
+        <label for="resource">Select Resource:</label>
+        <select id="resource" name="resource">
+            {% for index in range(resources|length) %}
+                <option value="{{ index }}">{{ resources[index] }}</option>
+            {% endfor %}
+        </select><br>
+        <label>Select Date:</label>
+        <input type="date" name="booking_date" value="{{ booking_date|default(today) }}"><br>
+	<label >Select Time Slot:</label>
+	<div>
+            <input type="checkbox" name="time_slots" value="08:00"> 08:00 - 10:00<br>
+	    <input type="checkbox" name="time_slots" value="10:00"> 10:00 - 12:00<br>
+	    <input type="checkbox" name="time_slots" value="12:00"> 12:00 - 14:00<br>
+	    <input type="checkbox" name="time_slots" value="14:00"> 14:00 - 16:00<br>
+	    <input type="checkbox" name="time_slots" value="16:00"> 16:00 - 18:00<br>
+	    <input type="checkbox" name="time_slots" value="18:00"> 18:00 - 20:00<br>
+	</div>
+	<label for="booked_by">Booked By:</label>
+        <input type="text" id="booked_by" name="booked_by"><br>
+        <input type="submit" value="Book Slot">
+    </form>
+<h2>Today's Bookings:</h2>
+<table>
+    <tr>
+        <th>Time Slot</th>
+        {% for resource in resources %}
+            <th>{{ resource }}</th>
+        {% endfor %}
+    </tr>
+    {% for hour in range(8, 20, 2) %}
+        <tr>
+            <td>{{ "{:02d}:00 - {:02d}:00".format(hour, hour + 2) }}</td>
+            {% for resource_id in range(resources|length) %}
+                <td>
+                    {% for slot in booked_slots %}
+                        {% if slot.time_slot == "{:02d}:00".format(hour) and slot.resource_id == resource_id %}
+                            {{ slot.booked_by }}
+                        {% endif %}
+                    {% endfor %}
+                </td>
+            {% endfor %}
+        </tr>
+    {% endfor %}
+</table>
+</body>
+</html>
