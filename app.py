@@ -5,6 +5,7 @@ from datetime import date
 from sqlalchemy import PrimaryKeyConstraint
 from flask_migrate import Migrate
 from datetime import datetime
+from flask import jsonify
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///slots.db'
 db = SQLAlchemy(app)
@@ -61,6 +62,47 @@ def index():
     #booked_slots = Slot.query.all()
     
     return render_template('index.html', resources=resources, booked_slots=booked_slots)
+
+def is_booked(hour, resource_id,booked_slots):
+    for slot in booked_slots:
+        if slot.time_slot == "{:02d}:00".format(hour) and slot.resource_id == resource_id:
+            return True
+    return False
+
+
+
+@app.context_processor
+def utility_processor():
+    return dict(is_booked=is_booked)
+
+
+
+@app.route('/update-table', methods=['GET'])
+def update_table():
+    selected_date = request.args.get('date')
+    
+    # Fetch data from the database based on the selected date
+    # Assuming your Slot model has a field named 'booking_date'
+    booked_slots = Slot.query.filter_by(booking_date=selected_date).all()
+
+    data = []
+    for hour in range(8, 20, 2):
+        row = {
+            'timeSlot': "{:02d}:00 - {:02d}:00".format(hour, hour + 2),
+            'resources': []
+        }
+        for resource_id in range(len(resources)):
+            booked_by = ""
+            for slot in booked_slots:
+                if slot.time_slot == "{:02d}:00".format(hour) and slot.resource_id == resource_id:
+                    booked_by = slot.booked_by
+                    break
+            row['resources'].append(booked_by)
+        print(selected_date)
+        data.append(row)
+    print(data)
+    return jsonify(data)
+
 
 if __name__ == '__main__':
     with app.app_context():

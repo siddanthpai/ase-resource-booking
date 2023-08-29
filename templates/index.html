@@ -3,6 +3,13 @@
 <head>
     <title>Slot Booking App</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script>
+    const resources = [
+        {% for resource in resources %}
+            "{{ resource }}",
+        {% endfor %}
+    ];
+</script>
 </head>
 <body>
     <h1>ASE Booking App</h1>
@@ -14,7 +21,7 @@
             {% endfor %}
         </select><br>
         <label>Select Date:</label>
-        <input type="date" name="booking_date" value="{{ booking_date|default(today) }}"><br>
+        <input type="date" name="booking_date" id = "book" value="{{ booking_date|default(today) }}" ><br>
 	<label >Select Time Slot:</label>
 	<div>
             <input type="checkbox" name="time_slots" value="08:00"> 08:00 - 10:00<br>
@@ -29,27 +36,63 @@
         <input type="submit" value="Book Slot">
     </form>
 <h2>Today's Bookings:</h2>
-<table>
-    <tr>
-        <th>Time Slot</th>
-        {% for resource in resources %}
-            <th>{{ resource }}</th>
-        {% endfor %}
-    </tr>
-    {% for hour in range(8, 20, 2) %}
+    <table class="booking-table">
         <tr>
-            <td>{{ "{:02d}:00 - {:02d}:00".format(hour, hour + 2) }}</td>
-            {% for resource_id in range(resources|length) %}
-                <td>
-                    {% for slot in booked_slots %}
-                        {% if slot.time_slot == "{:02d}:00".format(hour) and slot.resource_id == resource_id %}
-                            {{ slot.booked_by }}
-                        {% endif %}
-                    {% endfor %}
-                </td>
+            <th>Time Slot</th>
+            {% for resource in resources %}
+                <th>{{ resource }}</th>
             {% endfor %}
         </tr>
-    {% endfor %}
-</table>
+        {% for hour in range(8, 20, 2) %}
+            <tr>
+                <td>{{ "{:02d}:00 - {:02d}:00".format(hour, hour + 2) }}</td>
+                {% for resource_id in range(resources|length) %}
+                    <td {% if is_booked(hour, resource_id,booked_slots) %}class="booked"{% endif %}>
+                        {% for slot in booked_slots %}
+                            {% if slot.time_slot == "{:02d}:00".format(hour) and slot.resource_id == resource_id %}
+                                {{ slot.booked_by }}
+                            {% endif %}
+                        {% endfor %}
+                    </td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+    </table>
+<script>
+ const bookingDateInput = document.getElementById('book');
+    const bookingTable = document.querySelector('.booking-table');
+
+    bookingDateInput.addEventListener('input', async function () {
+        alert("hereeeeeeeeeeeeeeeeeee")
+	    const selectedDate = bookingDateInput.value;
+
+        // Fetch updated data from the server based on the selected date
+        const response = await fetch(`/update-table?date=${selectedDate}`);
+        const data = await response.json();
+
+        bookingTable.innerHTML = ''; 
+	// Update the table with the new data
+        let tableHTML = `
+        <tr>
+            <th>Time Slot</th>
+            ${resources.map(resource => `<th>${resource}</th>`).join('')}
+        </tr>
+    `;
+
+        
+        data.forEach(row => {
+            const rowHtml = `
+                <tr>
+                    <td>${row.timeSlot}</td>
+                    ${row.resources.map(bookedBy => `<td${bookedBy ? ' class="booked"' : ''}>${bookedBy || ''}</td>`).join('')}
+                </tr>
+            `;
+            tableHTML += rowHtml;
+        });
+	
+
+        bookingTable.innerHTML = tableHTML;
+    });
+</script>
 </body>
 </html>
