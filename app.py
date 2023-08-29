@@ -45,21 +45,12 @@ def index():
                db.session.add(new_slot)
 
             db.session.commit()      
-         #  db.session.delete(existing_slot)
-         #  db.session.commit()
-            #   db.session.delete(existing_slot) 
-          #  new_slot = Slot(resource_id=resource_id, time_slot=time_slot, booking_date = booking_date,booked_by=existing_slot.booked_by)
 
-        #else:
-        #new_slot = Slot(resource_id=resource_id, time_slot=time_slot, booked_by=booked_by)
-
-        #db.session.add(new_slot)
         
     #db.session.query(Slot).delete()
     db.session.commit()
     
     booked_slots = Slot.query.filter_by(booking_date=booking_date).all()
-    #booked_slots = Slot.query.all()
     
     return render_template('index.html', resources=resources, booked_slots=booked_slots)
 
