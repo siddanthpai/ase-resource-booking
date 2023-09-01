@@ -52,7 +52,7 @@ def index():
     
     booked_slots = Slot.query.filter_by(booking_date=booking_date).all()
     
-    return render_template('index.html', resources=resources, booked_slots=booked_slots)
+    return render_template('index.html', resources=resources, booked_slots=booked_slots,booking_date=booking_date)
 
 def is_booked(hour, resource_id,booked_slots):
     for slot in booked_slots:

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Slot Booking App</title>
+    <title>ASE Booking </title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <script>
     const resources = [
@@ -9,10 +9,15 @@
             "{{ resource }}",
         {% endfor %}
     ];
+    
+      function updateTableHeader(selectedDate) {
+        const tableHeader = document.querySelector('.date-header');
+        tableHeader.textContent = `Bookings for ${selectedDate}`;
+    }
 </script>
 </head>
 <body>
-    <h1>ASE Booking App</h1>
+    <h1>ASE Booking Sheet</h1>
     <form method="POST">
         <label for="resource">Select Resource:</label>
         <select id="resource" name="resource">
@@ -35,7 +40,7 @@
         <input type="text" id="booked_by" name="booked_by"><br>
         <input type="submit" value="Book Slot">
     </form>
-<h2>Today's Bookings:</h2>
+    <h2 class="date-header"> Todays booking </h2>
     <table class="booking-table">
         <tr>
             <th>Time Slot</th>
@@ -63,13 +68,12 @@
     const bookingTable = document.querySelector('.booking-table');
 
     bookingDateInput.addEventListener('input', async function () {
-        alert("hereeeeeeeeeeeeeeeeeee")
 	    const selectedDate = bookingDateInput.value;
 
         // Fetch updated data from the server based on the selected date
         const response = await fetch(`/update-table?date=${selectedDate}`);
         const data = await response.json();
-
+        updateTableHeader(selectedDate);
         bookingTable.innerHTML = ''; 
 	// Update the table with the new data
         let tableHTML = `
