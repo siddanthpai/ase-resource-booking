@@ -63,6 +63,19 @@
             </tr>
         {% endfor %}
     </table>
+    <h2>Resource URLs</h2>
+<table class="resource-url-table">
+    <tr>
+        <th>ASE</th>
+        <th>ASE Local UI </th>
+    </tr>
+    {% for resource, url in resource_urls.items() %}
+        <tr>
+            <td>{{ resource }}</td>
+            <td><a href="{{ url }}" target="_blank">{{ url }}</a></td>
+        </tr>
+    {% endfor %}
+</table>
 <script>
  const bookingDateInput = document.getElementById('book');
     const bookingTable = document.querySelector('.booking-table');

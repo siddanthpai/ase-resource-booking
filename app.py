@@ -19,8 +19,15 @@ class Slot(db.Model):
         PrimaryKeyConstraint('resource_id', 'time_slot','booking_date'),
     )
 
-resources = ['ASE1', 'ASE2', 'ASE3', 'ASE4', 'ASE5', 'ASE6', 'ASE7']
-
+resources = ['ASE20', 'ASE21', 'ASE58', 'ASE60', 'ASE62', 'ASE66']
+resource_urls = {
+    'ASE20': 'https://example.com/ase20',
+    'ASE21': 'https://example.com/ase21',
+    'ASE58': 'https://example.com/ase58',
+    'ASE60': 'https://example.com/ase60',
+    'ASE62': 'https://example.com/ase62',
+    'ASE66': 'https://example.com/ase66',
+}
 @app.route('/', methods=['GET', 'POST'])
 def index():
     booking_date = date.today()
@@ -28,8 +35,6 @@ def index():
         resource_id = int(request.form['resource'])
         time_slots = request.form.getlist('time_slots')
         booked_by = request.form['booked_by']
-        #booking_date = request.form['booking_date']
-        #booking_date = datetime.strptime(request.form['booking_date'], '%Y-%m-%d').date()
         booking_date_str = request.form.get('booking_date')
         if booking_date_str:
             booking_date = datetime.strptime(booking_date_str, '%Y-%m-%d').date()
@@ -52,7 +57,7 @@ def index():
     
     booked_slots = Slot.query.filter_by(booking_date=booking_date).all()
     
-    return render_template('index.html', resources=resources, booked_slots=booked_slots,booking_date=booking_date)
+    return render_template('index.html', resources=resources, booked_slots=booked_slots,booking_date=booking_date,resource_urls=resource_urls)
 
 def is_booked(hour, resource_id,booked_slots):
     for slot in booked_slots:
@@ -89,9 +94,7 @@ def update_table():
                     booked_by = slot.booked_by
                     break
             row['resources'].append(booked_by)
-        print(selected_date)
         data.append(row)
-    print(data)
     return jsonify(data)
 
 
