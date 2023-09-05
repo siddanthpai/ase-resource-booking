@@ -3,6 +3,21 @@
 <head>
     <title>ASE Booking </title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <!-- Include Bootstrap CSS (if not already included) -->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+<!-- Include Bootstrap Datepicker CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
+
+<!-- Include jQuery (required for Bootstrap) -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+
+<!-- Include Bootstrap JS (if not already included) -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<!-- Include Bootstrap Datepicker JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+
     <script>
     const resources = [
         {% for resource in resources %}
@@ -18,15 +33,19 @@
 </head>
 <body>
     <h1>ASE Booking Sheet</h1>
+    <label>View Available Slots:</label>
+    <input type="date" name="booking_date" id = "book" value="{{ booking_date|default(today) }}" ><br>
     <form method="POST">
-        <label for="resource">Select Resource:</label>
+         
+	<label for="resource">Select ASE:</label>
         <select id="resource" name="resource">
             {% for index in range(resources|length) %}
                 <option value="{{ index }}">{{ resources[index] }}</option>
             {% endfor %}
         </select><br>
-        <label>Select Date:</label>
-        <input type="date" name="booking_date" id = "book" value="{{ booking_date|default(today) }}" ><br>
+        
+	<label>Select Date:</label>
+	<input type="text" id="booking_dates" name="booking_dates" class="form-control" multiple>
 	<label >Select Time Slot:</label>
 	<div>
             <input type="checkbox" name="time_slots" value="08:00"> 08:00 - 10:00<br>
@@ -40,7 +59,7 @@
         <input type="text" id="booked_by" name="booked_by"><br>
         <input type="submit" value="Book Slot">
     </form>
-    <h2 class="date-header"> Todays booking </h2>
+    <h2 class="date-header"> Bookings for {{booking_date}} </h2>
     <table class="booking-table">
         <tr>
             <th>Time Slot</th>
@@ -63,20 +82,29 @@
             </tr>
         {% endfor %}
     </table>
-    <h2>Resource URLs</h2>
 <table class="resource-url-table">
     <tr>
         <th>ASE</th>
         <th>ASE Local UI </th>
+	<th>ASE Owners</th>
     </tr>
     {% for resource, url in resource_urls.items() %}
         <tr>
             <td>{{ resource }}</td>
             <td><a href="{{ url }}" target="_blank">{{ url }}</a></td>
+	    <td>{{ ase_owners[resource]   }}</td>
         </tr>
     {% endfor %}
 </table>
 <script>
+
+	$(document).ready(function () {
+    $('#booking_dates').datepicker({
+        format: "yyyy-mm-dd",
+        multidate: true, // Enable multiple date selection
+    });
+});
+
  const bookingDateInput = document.getElementById('book');
     const bookingTable = document.querySelector('.booking-table');
 

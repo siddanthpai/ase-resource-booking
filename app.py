@@ -19,15 +19,29 @@ class Slot(db.Model):
         PrimaryKeyConstraint('resource_id', 'time_slot','booking_date'),
     )
 
-resources = ['ASE20', 'ASE21', 'ASE58', 'ASE60', 'ASE62', 'ASE66']
+resources = ['ASE-20', 'ASE-21','ASE-25','ASE-57','ASE-58', 'ASE-60', 'ASE-62', 'ASE-66']
 resource_urls = {
-    'ASE20': 'https://example.com/ase20',
-    'ASE21': 'https://example.com/ase21',
-    'ASE58': 'https://example.com/ase58',
-    'ASE60': 'https://example.com/ase60',
-    'ASE62': 'https://example.com/ase62',
-    'ASE66': 'https://example.com/ase66',
+    'ASE-20': 'https://5g-ase-20.datcon.co.uk/',
+    'ASE-21': 'https://5g-ase-21.datcon.co.uk/',
+    'ASE-25': 'https://5g-ase-25.datcon.co.uk/',
+    'ASE-57': 'https://5g-ase-57.datcon.co.uk/',
+    'ASE-58': 'https://5g-ase-58.datcon.co.uk/',
+    'ASE-60': 'https://5g-ase-60.datcon.co.uk/',
+    'ASE-62': 'https://5g-ase-62.datcon.co.uk/',
+    'ASE-66': 'https://5g-ase-66.datcon.co.uk/',
 }
+
+ase_owners = {
+    'ASE-20': 'Sumantra',
+    'ASE-21': 'Sumantra',
+    'ASE-25': 'Jayashankar',
+    'ASE-57': 'Jayashankar',
+    'ASE-58': 'Souvick',
+    'ASE-60': 'Souvick',
+    'ASE-62': 'Sumantra',
+    'ASE-66': 'Souvick',
+}
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
     booking_date = date.today()
@@ -35,21 +49,24 @@ def index():
         resource_id = int(request.form['resource'])
         time_slots = request.form.getlist('time_slots')
         booked_by = request.form['booked_by']
-        booking_date_str = request.form.get('booking_date')
-        if booking_date_str:
+        booking_dates = request.form.getlist('booking_dates')
+        booking_dates_str = booking_dates[0].split(',')
+        print("hellllllllllllllllo")
+        print(booking_dates_str) 
+        for booking_date_str in booking_dates_str:
+            print(booking_date_str)
             booking_date = datetime.strptime(booking_date_str, '%Y-%m-%d').date()
+            for time_slot in time_slots:
+                existing_slot = Slot.query.filter_by(resource_id=resource_id, time_slot=time_slot, booking_date=booking_date).first()
+                if existing_slot:
+                   existing_slot = db.session.query(Slot).get((resource_id, time_slot,booking_date))
+                   existing_slot.booked_by = booked_by
+                   db.session.add(existing_slot)
+                else:
+                   new_slot = Slot(resource_id=resource_id, time_slot=time_slot, booked_by=booked_by,booking_date=booking_date)
+                   db.session.add(new_slot)
 
-        for time_slot in time_slots:
-            existing_slot = Slot.query.filter_by(resource_id=resource_id, time_slot=time_slot, booking_date=booking_date).first()
-            if existing_slot:
-               existing_slot = db.session.query(Slot).get((resource_id, time_slot,booking_date))
-               existing_slot.booked_by = booked_by
-               db.session.add(existing_slot)
-            else:
-               new_slot = Slot(resource_id=resource_id, time_slot=time_slot, booked_by=booked_by,booking_date=booking_date)
-               db.session.add(new_slot)
-
-            db.session.commit()      
+        db.session.commit()      
 
         
     #db.session.query(Slot).delete()
@@ -57,7 +74,7 @@ def index():
     
     booked_slots = Slot.query.filter_by(booking_date=booking_date).all()
     
-    return render_template('index.html', resources=resources, booked_slots=booked_slots,booking_date=booking_date,resource_urls=resource_urls)
+    return render_template('index.html', resources=resources, booked_slots=booked_slots,booking_date=booking_date,resource_urls=resource_urls,ase_owners=ase_owners)
 
 def is_booked(hour, resource_id,booked_slots):
     for slot in booked_slots:
