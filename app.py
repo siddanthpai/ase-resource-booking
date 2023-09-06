@@ -19,13 +19,13 @@ class Slot(db.Model):
         PrimaryKeyConstraint('resource_id', 'time_slot','booking_date'),
     )
 
-resources = ['ASE-20', 'ASE-21','ASE-25','ASE-57','ASE-58', 'ASE-60', 'ASE-62', 'ASE-66']
+resources = ['ASE-20', 'ASE-21','ASE-25','ASE-57(2-Node)','ASE-58(2-Node)', 'ASE-60', 'ASE-62', 'ASE-66']
 resource_urls = {
     'ASE-20': 'https://5g-ase-20.datcon.co.uk/',
     'ASE-21': 'https://5g-ase-21.datcon.co.uk/',
     'ASE-25': 'https://5g-ase-25.datcon.co.uk/',
-    'ASE-57': 'https://5g-ase-57.datcon.co.uk/',
-    'ASE-58': 'https://5g-ase-58.datcon.co.uk/',
+    'ASE-57(2-Node)': 'https://5g-ase-57.datcon.co.uk/',
+    'ASE-58(2-Node)': 'https://5g-ase-58.datcon.co.uk/',
     'ASE-60': 'https://5g-ase-60.datcon.co.uk/',
     'ASE-62': 'https://5g-ase-62.datcon.co.uk/',
     'ASE-66': 'https://5g-ase-66.datcon.co.uk/',
@@ -35,8 +35,8 @@ ase_owners = {
     'ASE-20': 'Sumantra',
     'ASE-21': 'Sumantra',
     'ASE-25': 'Jayashankar',
-    'ASE-57': 'Jayashankar',
-    'ASE-58': 'Souvick',
+    'ASE-57(2-Node)': 'Jayashankar',
+    'ASE-58(2-Node)': 'Souvick',
     'ASE-60': 'Souvick',
     'ASE-62': 'Sumantra',
     'ASE-66': 'Souvick',
